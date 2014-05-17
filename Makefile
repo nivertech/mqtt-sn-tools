@@ -5,23 +5,15 @@ CFLAGS=-g -Wall -DVERSION=$(VERSION)
 LDFLAGS=
 TARGETS=mqtt-sn-pub mqtt-sn-sub
 
+.PHONY: all clean dist
 
 all: $(TARGETS)
 
-mqtt-sn-pub: mqtt-sn.o mqtt-sn-pub.o
-	$(CC) $(LDFLAGS) -o mqtt-sn-pub $^
-  
-mqtt-sn-pub.o: mqtt-sn-pub.c mqtt-sn.h
-	$(CC) $(CFLAGS) -c mqtt-sn-pub.c
+$(TARGETS): % : %.o mqtt-sn.o
+	$(CC) $(LDFLAGS) -o $@ $^
 
-mqtt-sn-sub: mqtt-sn.o mqtt-sn-sub.o
-	$(CC) $(LDFLAGS) -o mqtt-sn-sub $^
-  
-mqtt-sn-sub.o: mqtt-sn-sub.c mqtt-sn.h
-	$(CC) $(CFLAGS) -c mqtt-sn-sub.c
-
-mqtt-sn.o: mqtt-sn.c mqtt-sn.h
-	$(CC) $(CFLAGS) -c mqtt-sn.c
+%.o : %.c mqtt-sn.h
+	$(CC) $(CFLAGS) -c $<
 
 clean:
 	rm -f *.o $(TARGETS)
@@ -33,5 +25,3 @@ dist:
 	done; \
 	tar -zcf $$distdir.tar.gz $$distdir; \
 	rm -fr $$distdir
-
-.PHONY: all clean dist
